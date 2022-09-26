@@ -1,4 +1,4 @@
-package com.cloud.rest.webservices.webapp.health;
+package com.cloud.rest.webservices.webapp.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
