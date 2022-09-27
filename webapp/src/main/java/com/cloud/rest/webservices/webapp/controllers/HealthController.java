@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping(path = "/healthz")
-    public Health HelloWorld(){
-
-        return new Health("API is working fine");
+    public void HealthCheck(){
     }
 }
