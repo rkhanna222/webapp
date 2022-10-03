@@ -4,6 +4,7 @@ package com.cloud.rest.webservices.webapp.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 
 import java.time.LocalDateTime;
@@ -19,13 +20,16 @@ public class User {
 
 
     @JsonProperty("username")
-    private String emailID;
+    @NotBlank(message = "username is not entered")
+    private String username;
 
 
     @JsonProperty("first_name")
+    @NotBlank(message="Firstname is required")
     private String firstName;
 
     @JsonProperty("last_name")
+    @NotBlank(message="Lastname is required")
     private String lastName;
 
     @JsonProperty("account_created")
@@ -37,17 +41,18 @@ public class User {
 
 
     @JsonIgnore
-    private String pass;
+    @JsonProperty("password")
+    private String password;
 
     public User() {
     }
 
-    public User(UUID id, String emailID, String firstName, String lastName, String pass, LocalDateTime accountCreated,LocalDateTime accountUpdated) {
+    public User(UUID id, String username, String firstName, String lastName, String password, LocalDateTime accountCreated,LocalDateTime accountUpdated) {
         this.id = id;
-        this.emailID = emailID;
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.pass = pass;
+        this.password = password;
         this.accountCreated =accountCreated;
         this.accountUpdated = accountUpdated;
     }
@@ -60,12 +65,12 @@ public class User {
         this.id = id;
     }
 
-    public String getEmailID() {
-        return emailID;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmailID(String emailID) {
-        this.emailID = emailID;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirstName() {
@@ -86,11 +91,11 @@ public class User {
 
     @JsonIgnore
     public String getPassword() {
-        return pass;
+        return password;
     }
 
     public void setPassword(String pass) {
-        this.pass = pass;
+        this.password = pass;
     }
 
 
@@ -114,7 +119,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", emailID='" + emailID + '\'' +
+                ", emailID='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';

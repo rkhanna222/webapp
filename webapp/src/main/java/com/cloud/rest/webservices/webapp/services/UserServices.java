@@ -4,22 +4,23 @@ import com.cloud.rest.webservices.webapp.errors.RegistrationStatus;
 import com.cloud.rest.webservices.webapp.models.User;
 import com.cloud.rest.webservices.webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-@Component
-public class UserServices {
+@Service
+public class UserServices implements UserDetailsService{
     private static List<User> users = new ArrayList<>();
     private static int countId = 0;
 
@@ -28,7 +29,7 @@ public class UserServices {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
 
 
@@ -47,11 +48,16 @@ public class UserServices {
         //return users.stream().filter(predicate).findFirst().orElse(null);
     }
 
+    public Boolean isEmailPresent(String username) {
+        return userRepository.isEmailPresent(username) > 0 ? true : false;
+    }
+
 
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAccountCreated(LocalDateTime.now());
         user.setAccountUpdated(LocalDateTime.now());
+        userRepository.save(user);
         return user;
     }
 
@@ -63,4 +69,21 @@ public class UserServices {
         return new RegistrationStatus(emailIdErrorMessage, passwordErrorMessage);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
+    }
+
+//    public User updateUserDetails(User user, UUID accountId) {
+//
+//        Optional<User> u = userRepository.findById(accountId);
+//
+//
+//
+//
+//
+//
+//
+//
+//    }
 }
