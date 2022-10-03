@@ -78,11 +78,11 @@ public class UserController {
         }
     }
 
-//    @PutMapping("/v1/account/{accountId}")
-//    public ResponseEntity<?> updateUserDetails(@Valid @RequestBody User user,@PathVariable("accountId"),UUID accountId,
+//    @PutMapping("/v1/account/{id}")
+//    public ResponseEntity<?> updateUserDetails(@Valid @RequestBody User user,@PathVariable("id") UUID id,
 //    BindingResult errors, HttpServletResponse response) throws Exception {
 //
-//        this.userServices.updateUserDetails(user,accountId);
+//        //this.userServices.updateUserDetails(user,id);
 //    }
 
 

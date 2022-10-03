@@ -1,6 +1,7 @@
 package com.cloud.rest.webservices.webapp.services;
 
 import com.cloud.rest.webservices.webapp.errors.RegistrationStatus;
+import com.cloud.rest.webservices.webapp.models.CustomUserDetails;
 import com.cloud.rest.webservices.webapp.models.User;
 import com.cloud.rest.webservices.webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,16 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @Service
-public class UserServices{
+public class UserServices implements UserDetailsService{
     private static List<User> users = new ArrayList<>();
     private static int countId = 0;
 
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<User> findAll(){
         return users;
@@ -49,7 +53,7 @@ public class UserServices{
 
 
     public User register(User user) {
-        //user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAccountCreated(LocalDateTime.now());
         user.setAccountUpdated(LocalDateTime.now());
         userRepository.save(user);
@@ -57,11 +61,21 @@ public class UserServices{
     }
 
     public RegistrationStatus getRegistrationStatus(BindingResult errors) {
-        FieldError emailIdError = errors.getFieldError("emailId");
+        FieldError usernameError = errors.getFieldError("username");
         FieldError passwordError = errors.getFieldError("password");
-        String emailIdErrorMessage = emailIdError == null ? "-" : emailIdError.getCode();
+        FieldError firstnameError = errors.getFieldError("firstName");
+        FieldError lastnameError = errors.getFieldError("lastName");
+        String firstnameErrorMessage = firstnameError == null ? "-" : firstnameError.getCode();
+        String lastnameErrorMessage = lastnameError == null ? "-" : lastnameError.getCode();
+        String usernameErrorMessage = usernameError == null ? "-" : usernameError.getCode();
         String passwordErrorMessage = passwordError == null ? "-" : passwordError.getCode();
-        return new RegistrationStatus(emailIdErrorMessage, passwordErrorMessage);
+        return new RegistrationStatus(usernameErrorMessage, passwordErrorMessage,firstnameErrorMessage,lastnameErrorMessage);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if(user==null) throw new UsernameNotFoundException("User with given emailId does not exist");
+        else return new CustomUserDetails(user);
+    }
 }

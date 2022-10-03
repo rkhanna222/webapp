@@ -15,7 +15,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     @Query("SELECT count(username) FROM User WHERE username=:username")
     int isEmailPresent(@Param("username") String username);
 
-    boolean findByUsername(String email);
+    User findByUsername(String email);
 
 
 

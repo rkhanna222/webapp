@@ -7,12 +7,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name="user_tbl")
-public class User {
+@Table(name="User")
+public class User implements Serializable{
 
     @Id
     @GeneratedValue
