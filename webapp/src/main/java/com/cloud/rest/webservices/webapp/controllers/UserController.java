@@ -46,12 +46,12 @@ public class UserController {
 
 
 
-    @GetMapping("/v1/account")
+    @GetMapping("/v1")
     public List<User> retrieveAllUsers(){
         return (List<User>) userRepository.findAll();
     }
 
-    @GetMapping("/v1/account/{accountId}")
+    @GetMapping("/v1/account/{id}")
     public EntityModel<User> getUserById(@PathVariable UUID id) {
 
         Optional<User> user = userRepository.findById(id);

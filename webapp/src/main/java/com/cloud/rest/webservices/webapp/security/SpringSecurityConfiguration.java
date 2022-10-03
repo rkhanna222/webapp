@@ -22,8 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SpringSecurityConfiguration {
 
-//    @Autowired
-//    private UserServices userServices;
 
     @Bean
     public UserValidator userValidator(){
@@ -38,7 +36,7 @@ public class SpringSecurityConfiguration {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/v1/account/*")
+                .antMatchers("/v1/account","/v1/account/*")
                 .fullyAuthenticated()
                 .anyRequest()
                 .permitAll()
@@ -50,54 +48,6 @@ public class SpringSecurityConfiguration {
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-
-
-//    @Bean
-//    public DaoAuthenticationProvider authProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userServices);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        return authProvider;
-//    }
-
-
-//    @Bean
-//    public DaoAuthenticationProvider authProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService);
-//        authProvider.setPasswordEncoder(encoder());
-//        return authProvider;
-//    }
-
-//    @Bean
-//    public UserDetailsService userDetailsService(BCryptPasswordEncoder bCryptPasswordEncoder) {
-//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-//
-////        manager.createUser(User.withUsername("username")
-////                .password(bCryptPasswordEncoder.encode("password"))
-////                .roles("USER")
-////                .build());
-////        manager.createUser(User.withUsername("admin")
-////                .password(bCryptPasswordEncoder.encode("adminPass"))
-////                .roles("USER", "ADMIN")
-////                .build());
-//        return manager;
-//    }
-
-//    @Bean
-//    public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailsService)
-//            throws Exception {
-//        return http.getSharedObject(AuthenticationManagerBuilder.class)
-//                .userDetailsService(userDetailsService)
-//                .passwordEncoder(bCryptPasswordEncoder)
-//                .and()
-//                .build();
-//    }
 
 
 }

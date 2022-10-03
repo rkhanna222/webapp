@@ -20,18 +20,13 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @Service
-public class UserServices implements UserDetailsService{
+public class UserServices{
     private static List<User> users = new ArrayList<>();
     private static int countId = 0;
 
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
 
     public List<User> findAll(){
         return users;
@@ -54,7 +49,7 @@ public class UserServices implements UserDetailsService{
 
 
     public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAccountCreated(LocalDateTime.now());
         user.setAccountUpdated(LocalDateTime.now());
         userRepository.save(user);
@@ -69,21 +64,4 @@ public class UserServices implements UserDetailsService{
         return new RegistrationStatus(emailIdErrorMessage, passwordErrorMessage);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
-
-//    public User updateUserDetails(User user, UUID accountId) {
-//
-//        Optional<User> u = userRepository.findById(accountId);
-//
-//
-//
-//
-//
-//
-//
-//
-//    }
 }
