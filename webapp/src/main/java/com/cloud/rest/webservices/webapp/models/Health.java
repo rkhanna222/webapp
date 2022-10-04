@@ -1,4 +1,4 @@
-package com.cloud.rest.webservices.webapp.controllers;
+package com.cloud.rest.webservices.webapp.models;
 
 public class Health {
 
