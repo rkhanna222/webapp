@@ -35,6 +35,8 @@ public class SpringSecurityConfiguration  {
     }
 
 
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
@@ -46,10 +48,10 @@ public class SpringSecurityConfiguration  {
                 .anyRequest()
                 .permitAll()
                 .and()
-                .httpBasic()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .httpBasic();
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
     }
 
