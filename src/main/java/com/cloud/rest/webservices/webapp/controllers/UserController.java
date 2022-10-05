@@ -93,38 +93,57 @@ public class UserController {
         String loggedUser = authenticatedUser(request);
         Optional<User> u = userRepository.findById(id);
 
+        //System.out.println(u.get().getUsername().toString());
+
 
 
         if(!u.get().getUsername().equals(loggedUser)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
         }
+
+        System.out.println(user);
         if(user==null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Request body cannot be empty");
         }
-        if(!user.getUsername().isEmpty() || user.getUsername()!=null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot update username");
-        }
 
-        if(user.getPassword()!=null||!user.getPassword().isEmpty()){
-            if(passwordValidate(user.getPassword())){
-                u.get().setPassword(passwordEncoder.encode(user.getPassword()));
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Password must 9-30 characters long and must have Uppercase, " +
-                                "Lowercase, Special characters and Digits\"");
+        //if(request.)
+
+
+        if(user.getUsername()!=null){
+            if(!user.getUsername().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot update username");
             }
         }
-        if(user.getFirstName()!=null||!user.getFirstName().isEmpty()){
-            u.get().setFirstName(user.getFirstName());
+
+        if(user.getPassword()!=null){
+            if(!user.getPassword().isEmpty()){
+                if(passwordValidate(user.getPassword())){
+                    u.get().setPassword(passwordEncoder.encode(user.getPassword()));
+                }
+                else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Password must 9-30 characters long and must have Uppercase, " +
+                                    "Lowercase, Special characters and Digits\"");
+                }
+            }
+
+        }
+        if(user.getFirstName()!=null){
+            if(!user.getFirstName().isEmpty()){
+                u.get().setFirstName(user.getFirstName());
+            }
         }
 
-        if(user.getLastName()!=null||!user.getLastName().isEmpty()){
-            u.get().setLastName(user.getLastName());
+        if(user.getLastName()!=null){
+            if(!user.getLastName().isEmpty()){
+                u.get().setLastName(user.getLastName());
+            }
         }
         u.get().setAccountUpdated(LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CREATED).body(u);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(u.get()));
     }
+
+
 
 
     private String authenticatedUser(HttpServletRequest request){

@@ -17,6 +17,7 @@ public class User implements Serializable{
 
     @Id
     @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
 
