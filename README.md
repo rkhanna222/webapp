@@ -21,6 +21,8 @@ Web application built with Spring Boot
 -   Endpoint - 'http://localhost:3000/healthz'
 
 --------------------------------------------------------
+
+--------------------------------------------------------
 ## Some GitHub Commands
 -   git status
 -   git add .
