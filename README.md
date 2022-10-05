@@ -5,9 +5,13 @@ Web application built with Spring Boot
 -  Clone this repository  into the local system
 -  Open the CLI
 -  mvn clean install
--  java -jar <jar file>
+-  java -jar jar file
 
 ## Run the test
+-  mvn test
+
+## Kill the process on a port
+-  kill $(lsof -t -i:8080)
 
 ## Assignment 1
 -   Created a organization called 'RaghavCloud222' and made a repo called webapp
