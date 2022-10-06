@@ -86,6 +86,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult errors, HttpServletResponse response) throws Exception {
         RegistrationStatus registrationStatus;
 
+
         if(user.getId()!=null){
             if(!user.getId().toString().isEmpty()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put ID");
