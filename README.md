@@ -5,9 +5,11 @@ Web application built with Spring Boot
 -  Clone this repository  into the local system
 -  Open the CLI
 -  mvn clean install
+-  mvn spring-boot:run
+
 
 ## Run the test
--  mvn test
+-  mvn test -DskipTests=false
 
 ## Kill the process on a port
 -  kill $(lsof -t -i:8080)
