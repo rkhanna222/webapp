@@ -5,7 +5,6 @@ Web application built with Spring Boot
 -  Clone this repository  into the local system
 -  Open the CLI
 -  mvn clean install
--  java -jar jar file
 
 ## Run the test
 -  mvn test
