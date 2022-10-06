@@ -34,10 +34,10 @@ public class User implements Serializable{
     @NotBlank(message="Lastname is required")
     private String lastName;
 
-    @JsonProperty("account_created")
+    @JsonProperty(value ="account_created",access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime accountCreated;
 
-    @JsonProperty("account_updated")
+    @JsonProperty(value = "account_updated",access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime accountUpdated;
 
 
@@ -124,6 +124,9 @@ public class User implements Serializable{
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", accountCreated=" + accountCreated +
+                ", accountUpdated=" + accountUpdated +
+                ", password='" + password + '\'' +
                 '}';
     }
 }
