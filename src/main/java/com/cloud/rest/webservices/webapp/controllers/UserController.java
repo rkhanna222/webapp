@@ -59,7 +59,14 @@ public class UserController {
     @GetMapping("/v1/account/{id}")
     public ResponseEntity<?> getUserById(@PathVariable UUID id, HttpServletRequest request) {
 
-        String loggedUser = authenticatedUser(request);
+        String loggedUser = "";
+
+        try {
+             loggedUser = authenticatedUser(request);
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
+        }
 
         Optional<User> user = userRepository.findById(id);
 
@@ -78,6 +85,23 @@ public class UserController {
     @PostMapping("/v1/account")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult errors, HttpServletResponse response) throws Exception {
         RegistrationStatus registrationStatus;
+
+        if(user.getId()!=null){
+            if(!user.getId().toString().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put ID");
+            }
+        }
+        if(user.getAccountCreated()!=null){
+            if(!user.getAccountCreated().toString().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put account created date");
+            }
+        }
+        if(user.getAccountUpdated()!=null){
+            if(!user.getUsername().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put account updated date");
+            }
+        }
+
         if(errors.hasErrors()) {
             registrationStatus = userServices.getRegistrationStatus(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registrationStatus);
@@ -93,21 +117,16 @@ public class UserController {
         String loggedUser = authenticatedUser(request);
         Optional<User> u = userRepository.findById(id);
 
-        //System.out.println(u.get().getUsername().toString());
-
 
 
         if(!u.get().getUsername().equals(loggedUser)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
         }
 
         System.out.println(user);
         if(user==null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Request body cannot be empty");
         }
-
-        //if(request.)
-
 
         if(user.getUsername()!=null){
             if(!user.getUsername().isEmpty()){
@@ -137,6 +156,16 @@ public class UserController {
         if(user.getLastName()!=null){
             if(!user.getLastName().isEmpty()){
                 u.get().setLastName(user.getLastName());
+            }
+        }
+        if(user.getAccountCreated()!=null){
+            if(!user.getAccountCreated().toString().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put account created date");
+            }
+        }
+        if(user.getAccountUpdated()!=null){
+            if(!user.getUsername().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot put account updated date");
             }
         }
         u.get().setAccountUpdated(LocalDateTime.now());

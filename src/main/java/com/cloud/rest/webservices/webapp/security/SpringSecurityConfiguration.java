@@ -49,9 +49,6 @@ public class SpringSecurityConfiguration  {
                 .permitAll()
                 .and()
                 .httpBasic();
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
     }
 
