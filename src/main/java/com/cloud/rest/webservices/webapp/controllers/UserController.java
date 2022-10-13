@@ -58,28 +58,39 @@ public class UserController {
 
     @GetMapping("/v1/account/{id}")
     public ResponseEntity<?> getUserById(@PathVariable UUID id, HttpServletRequest request) {
+        Optional<User> user = null;
+        try {
+            user = userRepository.findById(id);
+            System.out.println(user);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+
+        
 
         String loggedUser = "";
+        String username = "";
+        String password = "";
 
         try {
-             loggedUser = authenticatedUser(request);
+            loggedUser = authenticatedUser(request);
+            username = loggedUser.split(" ")[0];
+            password = loggedUser.split(" ")[1];
         }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
         }
 
-        Optional<User> user = userRepository.findById(id);
-
+        if(!((user.get().getUsername().equals(username)) && (passwordEncoder.matches(password,user.get().getPassword())))){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
+        }
         if(user.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-        if(!user.get().getUsername().equals(loggedUser)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
-        }
+
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-
-
 
     //Post User
     @PostMapping("/v1/account")
@@ -115,16 +126,31 @@ public class UserController {
     public ResponseEntity<?> updateUserDetails(@RequestBody User user,@PathVariable("id") UUID id,
                                              HttpServletRequest request) {
 
-        String loggedUser = authenticatedUser(request);
-        Optional<User> u = userRepository.findById(id);
-
-
-
-        if(!u.get().getUsername().equals(loggedUser)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
+        Optional<User> u = null;
+        try {
+            u = userRepository.findById(id);
+            System.out.println(user);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
 
-        System.out.println(user);
+        String loggedUser = "";
+        String username = "";
+        String password = "";
+
+        try {
+            loggedUser = authenticatedUser(request);
+            username = loggedUser.split(" ")[0];
+            password = loggedUser.split(" ")[1];
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
+        }
+
+        if(!((u.get().getUsername().equals(username)) && (passwordEncoder.matches(password,u.get().getPassword())))){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
+        }
         if(user==null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Request body cannot be empty");
         }
@@ -134,7 +160,6 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot update username");
             }
         }
-
         if(user.getPassword()!=null){
             if(!user.getPassword().isEmpty()){
                 if(passwordValidate(user.getPassword())){
@@ -186,7 +211,7 @@ public class UserController {
         String passWord = decodedStr.split(":")[1];
         System.out.println("Value of Token" + " "+ decodedStr);
 
-        return userName;
+        return (userName + " " + passWord);
 
     }
 

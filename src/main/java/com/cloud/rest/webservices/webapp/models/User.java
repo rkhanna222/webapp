@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class User implements Serializable{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
