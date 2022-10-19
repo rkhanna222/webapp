@@ -50,14 +50,28 @@ jobs:
         env:
           PACKER_LOG: 1 # enable debug log for packer
 
-      - name: Build AMI with artifacts
-        uses: hashicorp/packer-github-actions@master
+      - name: Packer build
+        uses: ExitoLab/packer_build_action_aws@v0.2.10
         with:
-          command: build
-          arguments: "-color=false -on-error=abort"
-          target: .
-          working_directory: ami
+          templateFile: 'ami.pkr.hcl'
+          workingDir: 'ami'
+          varFile: 'variables.pkr.hcl'
         env:
-          PACKER_LOG: 1
-          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
+
+        #      - name: Build AMI with artifacts
+        #        uses: hashicorp/packer-github-actions@master
+        #        with:
+        #          command: build
+        #          arguments: "-color=false -on-error=abort"
+        #          target: .
+        #          working_directory: ami
+        #        env:
+        #          PACKER_LOG: 1
+        #          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
+        ##          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
