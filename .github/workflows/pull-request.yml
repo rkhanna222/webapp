@@ -39,10 +39,10 @@ jobs:
 #        with:
 #          name: artifacts
 #          path: staging
-      - name: Initialize Packer Template
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: init
+#      - name: Initialize Packer Template
+#        uses: hashicorp/packer-github-actions@master
+#        with:
+#          command: init
 
       - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
