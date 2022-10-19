@@ -51,7 +51,7 @@ jobs:
           PACKER_LOG: 1 # enable debug log for packer
 
       - name: Packer build
-        uses: ExitoLab/packer_build_action_aws@v0.2.10
+        uses: hashicorp/packer-github-actions@master
         with:
           templateFile: 'ami.pkr.hcl'
           workingDir: 'ami'
