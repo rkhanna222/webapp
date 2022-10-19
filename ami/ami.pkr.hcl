@@ -19,17 +19,17 @@ variable "subnet_id" {
 
 variable "aws_access_key_id" {
   type    = string
-  default = "{{ env `AWS_ACCESS_KEY_ID` }}"
+  default = env("AWS_ACCESS_KEY_ID")
 }
 
 variable "aws_secret_access_key" {
   type    = string
-  default = "{{ env `AWS_SECRET_ACCESS_KEY` }}"
+  default = env("AWS_SECRET_ACCESS_KEY")
 }
 
 variable "aws_profile" {
   type    = string
-  default = "{{ env `AWS_PROFILE` }}"
+  default = env("AWS_PROFILE")
 }
 
 
