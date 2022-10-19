@@ -33,6 +33,7 @@ variable "aws_profile" {
 }
 
 
+
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
