@@ -47,6 +47,9 @@ sudo service mysql start
 echo "Installing HTOP"
 sudo apt-get install htop
 #sudo htop
+echo "Running Application"
+java -jar webapp-0.0.1-SNAPSHOT.jar
+
 
 # echo "Installing Application"
 # scp -i /Users/raghavkhanna/.ssh/aws.pem /Users/raghavkhanna/Desktop/WEBAPP/webapp/target/webapp-0.0.1-SNAPSHOT.jar ubuntu@ec2-107-22-128-160.compute-1.amazonaws.com:~ |
