@@ -35,12 +35,14 @@ variable "aws_profile" {
 
 
 source "amazon-ebs" "my-ami" {
-  region          = "${var.aws_region}"
-  ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
-  ami_description = "AMI for CSYE 6225"
-  profile         = "${var.aws_profile}"
-  access_key      = "${var.aws_access_key_id}"
-  secret_key      = "${var.aws_secret_access_key}"
+  region                  = "${var.aws_region}"
+  ami_name                = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
+  ami_description         = "AMI for CSYE 6225"
+  profile                 = "${var.aws_profile}"
+  access_key              = "${var.aws_access_key_id}"
+  secret_key              = "${var.aws_secret_access_key}"
+  ssh_agent_auth          = false
+  temporary_key_pair_type = "ed25519"
   ami_regions = [
     "us-east-1",
   ]
@@ -67,7 +69,7 @@ build {
     timeout      = "10s"
   }
   provisioner "file" {
-    source = "../target/webapp-0.0.1-SNAPSHOT.jar"
+    source      = "../target/webapp-0.0.1-SNAPSHOT.jar"
     destination = "/home/ubuntu/"
   }
 
