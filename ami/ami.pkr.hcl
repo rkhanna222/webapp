@@ -27,14 +27,19 @@ variable "aws_secret_access_key" {
   default = "{{ env `AWS_SECRET_ACCESS_KEY` }}"
 }
 
+variable "aws_profile" {
+  type    = string
+  default = "{{ env `AWS_PROFILE` }}"
+}
+
 
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
-  profile         = "{{ env `AWS_PROFILE` }}"
-  access_key      = "{{ env `AWS_ACCESS_KEY_ID` }}"
-  secret_key      = "{{ env `AWS_SECRET_ACCESS_KEY` }}"
+  profile         = "${var.aws_profile}"
+  access_key      = "${var.aws_access_key_id}"
+  secret_key      = "${var.aws_secret_access_key}"
   ami_regions = [
     "us-east-1",
   ]
