@@ -23,8 +23,19 @@ jobs:
         run: |
           docker run --detach \--env MYSQL_ROOT_PASSWORD=user \--env MYSQL_USER=user \--env MYSQL_PASSWORD=user \--env MYSQL_DATABASE=mydatabase \--name mysql \--publish 3306:3306 mysql:8-oracle
 
-      - name: Build with Maven
-        run: mvn clean install
-
-      - name: test
+      - name: Test
         run: mvn test -DskipTests=false
+
+      - name: Have github action to create maven build
+        run: |
+          mvn -B package --file pom.xml
+          mkdir staging && cp target/*.jar staging
+
+      - name: Persist workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: staging
+
+      - name: Validate Packer Script
+        run: packer validate ami .
