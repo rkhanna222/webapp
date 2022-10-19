@@ -27,6 +27,10 @@ build {
     pause_before = "10s"
     timeout      = "10s"
   }
+  provisioner "file" {
+    source = "../target/webapp-0.0.1-SNAPSHOT.jar"
+    destination = "/home/ubuntu/"
+  }
 
 
 }

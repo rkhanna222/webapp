@@ -23,19 +23,43 @@ jobs:
         run: |
           docker run --detach \--env MYSQL_ROOT_PASSWORD=user \--env MYSQL_USER=user \--env MYSQL_PASSWORD=user \--env MYSQL_DATABASE=mydatabase \--name mysql \--publish 3306:3306 mysql:8-oracle
 
+      - name: Build Maven
+        run: mvn clean install
+
       - name: Test
         run: mvn test -DskipTests=false
 
-      - name: Have github action to create maven build
+#      - name: Have github action to create maven build
+#        run: |
+#          mvn -B package --file pom.xml
+#          mkdir staging && cp target/webapp-0.0.1-SNAPSHOT.jar staging
+#
+#      - name: Persist workflow data as artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: artifacts
+#          path: staging
+
+      - name: Validate Packer Template
+        uses: hashicorp/packer-github-actions@master
         run: |
-          mvn -B package --file pom.xml
-          mkdir staging && cp target/*.jar staging
+          cd ami
+          packer build .
+#        with:
+#          command: validate
+#          arguments: # only validate syntax
+#          target: ami/ami.pkr.hcl
+#        env:
+#          PACKER_LOG: 1 # enable debug log for packer
 
-      - name: Persist workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifacts
-          path: staging
-
-      - name: Validate Packer Script
-        run: packer validate ami .
+#      - name: Build Artifact
+#        uses: hashicorp/packer-github-actions@master
+#        run: |
+#          cd ami
+#          packer build .
+#        with:
+#          command: build
+#          arguments: "-color=false -on-error=abort"
+#          target: ami/
+#        env:
+#          PACKER_LOG: 1
