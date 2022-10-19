@@ -79,6 +79,7 @@ build {
     timeout      = "10s"
   }
 
-
-
+  post-processor "manifest" {
+    output = "manifest.json"
+  }
 }
