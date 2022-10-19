@@ -40,19 +40,15 @@ jobs:
 #          name: artifacts
 #          path: staging
 
-      - name: Setup Packer
+      - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
-
-      - name: Validate Packer Template
-        run: |
-          cd ami
-          packer build .
-#        with:
-#          command: validate
-#          arguments: # only validate syntax
-#          target: ami/ami.pkr.hcl
-#        env:
-#          PACKER_LOG: 1 # enable debug log for packer
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: ami.pkr.hcl variables.pkr.hcl
+          working_directory: ami
+        env:
+          PACKER_LOG: 1 # enable debug log for packer
 
 #      - name: Build Artifact
 #        uses: hashicorp/packer-github-actions@master
