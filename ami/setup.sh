@@ -53,8 +53,8 @@ sudo apt-get install htop
 # java -jar webapp-0.0.1-SNAPSHOT.jar
 
 
-echo "Starting Application"
-sudo java -jar webapp-0.0.1-SNAPSHOT.jar &
+#echo "Starting Application"
+#sudo java -jar webapp-0.0.1-SNAPSHOT.jar &
 
 AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
 echo $AMI_ID
