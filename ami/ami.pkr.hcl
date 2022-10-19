@@ -48,9 +48,9 @@ source "amazon-ebs" "my-ami" {
   ]
 
   aws_polling {
-      delay_seconds = 120
-      max_attempts  = 50
-    }
+    delay_seconds = 120
+    max_attempts  = 50
+  }
 
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
@@ -68,15 +68,17 @@ source "amazon-ebs" "my-ami" {
 build {
   sources = ["source.amazon-ebs.my-ami"]
 
+  provisioner "file" {
+    source      = "../target/webapp-0.0.1-SNAPSHOT.jar"
+    destination = "/home/ubuntu/"
+  }
+
   provisioner "shell" {
     script       = "setup.sh"
     pause_before = "10s"
     timeout      = "10s"
   }
-  provisioner "file" {
-    source      = "../target/webapp-0.0.1-SNAPSHOT.jar"
-    destination = "/home/ubuntu/"
-  }
+
 
 
 }
