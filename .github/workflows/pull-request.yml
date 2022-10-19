@@ -40,8 +40,10 @@ jobs:
 #          name: artifacts
 #          path: staging
 
-      - name: Validate Packer Template
+      - name: Setup Packer
         uses: hashicorp/packer-github-actions@master
+
+      - name: Validate Packer Template
         run: |
           cd ami
           packer build .
