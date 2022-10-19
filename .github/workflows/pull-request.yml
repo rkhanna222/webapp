@@ -55,7 +55,7 @@ jobs:
         with:
           command: build
           arguments: "-color=false -on-error=abort"
-          target: variables.pkr.hcl ami.pkr.hcl
+          target: .
           working_directory: ami
         env:
           PACKER_LOG: 1
