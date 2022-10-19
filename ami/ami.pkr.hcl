@@ -32,9 +32,9 @@ source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
-  profile         = "{{ user `AWS_PROFILE` }}"
-  access_key      = "{{ user `AWS_ACCESS_KEY_ID` }}"
-  secret_key      = "{{ user `AWS_SECRET_ACCESS_KEY` }}"
+  profile         = "{{ env `AWS_PROFILE` }}"
+  access_key      = "{{ env `AWS_ACCESS_KEY_ID` }}"
+  secret_key      = "{{ env `AWS_SECRET_ACCESS_KEY` }}"
   ami_regions = [
     "us-east-1",
   ]
