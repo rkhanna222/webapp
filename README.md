@@ -7,9 +7,6 @@ Web application built with Spring Boot
 -  mvn clean install
 -  mvn spring-boot:run
 
-
-
-
 ## Run the test
 -  mvn test -DskipTests=false
 
