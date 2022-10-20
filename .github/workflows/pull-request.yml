@@ -29,12 +29,20 @@ jobs:
       - name: Test
         run: mvn test -DskipTests=false
 
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Validate Packer
         uses: hashicorp/packer-github-actions@master
         with:
           command: validate
           arguments: -syntax-only
-          target: ami.pkr.hcl variables.pkr.hcl
+          target: ami.pkr.hcl
           working_directory: ami
         env:
           PACKER_LOG: 1 # enable debug log for packer

@@ -19,6 +19,14 @@ jobs:
       - name: Build Maven
         run: mvn clean install
 
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Packer build
         uses: hashicorp/packer-github-actions@master
         with:

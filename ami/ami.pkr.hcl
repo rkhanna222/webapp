@@ -7,6 +7,13 @@ variable "source_ami" {
   default = "ami-08c40ec9ead489470" # Ubuntu 22.04 LTS
 }
 
+variable "ami_regions" {
+  type = list(string)
+  default = [
+    "us-east-1",
+  ]
+}
+
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
@@ -44,9 +51,7 @@ source "amazon-ebs" "my-ami" {
   secret_key              = "${var.aws_secret_access_key}"
   ssh_agent_auth          = false
   temporary_key_pair_type = "ed25519"
-  ami_regions = [
-    "us-east-1",
-  ]
+  ami_regions             = "${var.ami_regions}"
 
   aws_polling {
     delay_seconds = 120
