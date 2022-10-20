@@ -19,16 +19,6 @@ jobs:
       - name: Build Maven
         run: mvn clean install
 
-      - name: Validate Packer
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: validate
-          arguments: -syntax-only
-          target: ami.pkr.hcl variables.pkr.hcl
-          working_directory: ami
-        env:
-          PACKER_LOG: 1 # enable debug log for packer
-
       - name: Packer build
         uses: hashicorp/packer-github-actions@master
         with:
