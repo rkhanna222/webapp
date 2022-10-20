@@ -23,7 +23,7 @@ sudo useradd -r tomcat
 sudo chown -R tomcat:tomcat /opt/tomcat
 export CATALINA_HOME=/opt/tomcat/apache-tomcat-10.0.27
 export CATALINA_BASE=$CATALINA_HOME
-$CATALINA_HOME/bin/startup.sh
+#$CATALINA_HOME/bin/startup.sh
 # echo "Installing Tomcat"
 # sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.1/bin/apache-tomcat-10.1.1.tar.gz
 # sudo tar xzf apache-tomcat-10.1.1.tar.gz
@@ -39,8 +39,8 @@ CREATE USER 'user'@'localhost' IDENTIFIED BY 'user';
 GRANT ALL PRIVILEGES ON mydatabase.* TO 'user'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EOF
-echo "Starting mysql server"
-sudo service mysql start
+#echo "Starting mysql server"
+#sudo service mysql start
 
 echo "Installing HTOP"
 sudo apt-get install htop
