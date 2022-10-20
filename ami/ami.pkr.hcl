@@ -38,6 +38,7 @@ source "amazon-ebs" "my-ami" {
   region                  = "${var.aws_region}"
   ami_name                = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description         = "AMI for CSYE 6225"
+  ami_users               = ["958333861027"]
   profile                 = "${var.aws_profile}"
   access_key              = "${var.aws_access_key_id}"
   secret_key              = "${var.aws_secret_access_key}"
@@ -71,6 +72,17 @@ build {
   provisioner "file" {
     source      = "../target/webapp-0.0.1-SNAPSHOT.jar"
     destination = "/home/ubuntu/"
+  }
+  provisioner "file" {
+    source      = "reboot.sh"
+    destination = "/home/ubuntu/"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo mv /home/ubuntu/reboot.sh /var/lib/cloud/scripts/per-boot/",
+      "sudo chmod 777 /var/lib/cloud/scripts/per-boot/reboot.sh"
+    ]
   }
 
   provisioner "shell" {
