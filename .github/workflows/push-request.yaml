@@ -1,0 +1,42 @@
+name: AMI Builder
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  AMI Builder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: 'maven'
+
+      - name: Build Maven
+        run: mvn clean install
+
+      - name: Validate Packer
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: ami.pkr.hcl variables.pkr.hcl
+          working_directory: ami
+        env:
+          PACKER_LOG: 1 # enable debug log for packer
+
+      - name: Packer build
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort"
+          target: ami.pkr.hcl
+          working_directory: ami
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
