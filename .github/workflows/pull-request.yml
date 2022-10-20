@@ -28,55 +28,28 @@ jobs:
 
       - name: Test
         run: mvn test -DskipTests=false
-
-#      - name: Have github action to create maven build
-#        run: |
-#          mvn -B package --file pom.xml
-#          mkdir staging && cp target/webapp-0.0.1-SNAPSHOT.jar staging
 #
-#      - name: Persist workflow data as artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: artifacts
-#          path: staging
-#      - name: Initialize Packer Template
+#      - name: Validate Packer
 #        uses: hashicorp/packer-github-actions@master
 #        with:
-#          command: init
+#          command: validate
+#          arguments: -syntax-only
+#          target: ami.pkr.hcl variables.pkr.hcl
+#          working_directory: ami
+#        env:
+#          PACKER_LOG: 1 # enable debug log for packer
+#
+#      - name: Packer build
+#        uses: hashicorp/packer-github-actions@master
+#        with:
+#          command: build
+#          arguments: "-color=false -on-error=abort"
+#          target: ami.pkr.hcl
+#          working_directory: ami
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
 
-      - name: Validate Packer
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: validate
-          arguments: -syntax-only
-          target: ami.pkr.hcl variables.pkr.hcl
-          working_directory: ami
-        env:
-          PACKER_LOG: 1 # enable debug log for packer
-
-      - name: Packer build
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: build
-          arguments: "-color=false -on-error=abort"
-          target: ami.pkr.hcl
-          working_directory: ami
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
-
-
-        #      - name: Build AMI with artifacts
-        #        uses: hashicorp/packer-github-actions@master
-        #        with:
-        #          command: build
-        #          arguments: "-color=false -on-error=abort"
-        #          target: .
-        #          working_directory: ami
-        #        env:
-        #          PACKER_LOG: 1
-        #          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
-        ##          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
