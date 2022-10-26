@@ -14,6 +14,7 @@ variable "ami_regions" {
   ]
 }
 
+
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
