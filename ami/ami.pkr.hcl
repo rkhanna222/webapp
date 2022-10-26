@@ -12,6 +12,7 @@ variable "ami_regions" {
   default = [
     "us-east-1",
   ]
+}
 
 
 variable "ssh_username" {
