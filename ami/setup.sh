@@ -8,39 +8,51 @@ echo "Java Version"
 java -version
 echo "Setting JAVA PATH"
 # /usr/lib/jvm/java-17-openjdk-amd64/
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-export PATH=$PATH:$JAVA_HOME/bin
+echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/" >>~/.bashrc
+echo "export PATH=$PATH:$JAVA_HOME/bin" >>~/.bashrc
 echo "Java Location"
 update-alternatives --list java
 echo "Installing Maven"
 sudo apt install maven -y
 
-echo "Installing Tomcat"
-sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
-sudo mkdir /opt/tomcat
-sudo tar -xvf apache-tomcat-10.0.27.tar.gz -C /opt/tomcat
-sudo useradd -r tomcat
-sudo chown -R tomcat:tomcat /opt/tomcat
-export CATALINA_HOME=/opt/tomcat/apache-tomcat-10.0.27
-export CATALINA_BASE=$CATALINA_HOME
-#$CATALINA_HOME/bin/startup.sh
-# echo "Installing Tomcat"
-# sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.1/bin/apache-tomcat-10.1.1.tar.gz
-# sudo tar xzf apache-tomcat-10.1.1.tar.gz
-# export CATALINA_HOME=/home/ubuntu/apache-tomcat-10.1.1
-# export CATALINA_BASE=$CATALINA_HOME
-# $CATALINA_HOME/bin/startup.sh
-# #$CATALINA_HOME/bin/shutdown.sh
-echo "Installing mysql server"
-sudo apt-get install mysql-server -y
-sudo mysql <<EOF
-CREATE DATABASE mydatabase;
-CREATE USER 'user'@'localhost' IDENTIFIED BY 'user';
-GRANT ALL PRIVILEGES ON mydatabase.* TO 'user'@'localhost' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-EOF
-#echo "Starting mysql server"
-#sudo service mysql start
+#echo "Installing Tomcat"
+#sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
+#sudo tar -xvf apache-tomcat-10.0.27.tar.gz -C /usr/local
+#sudo useradd -r tomcat
+#sudo chown -R tomcat:tomcat /usr/local/apache-tomcat-10.0.27
+## TOMCAT SCRIPT
+#sudo tee /etc/systemd/system/tomcat.service<<EOF
+#[Unit]
+#Description=Tomcat Server
+#After=syslog.target network.target
+#
+#[Service]
+#Type=forking
+#User=ubuntu
+#Group=ubuntu
+#
+#Environment=CATALINA_HOME=/usr/local/apache-tomcat-10.0.27
+#Environment=CATALINA_BASE=/usr/local/apache-tomcat-10.0.27
+#Environment=CATALINA_PID=/usr/local/apache-tomcat-10.0.27/temp/tomcat.pid
+#
+#ExecStart=/usr/local/apache-tomcat-10.0.27/bin/catalina.sh start
+#ExecStop=/usr/local/apache-tomcat-10.0.27/bin/catalina.sh stop
+#
+#RestartSec=12
+#Restart=always
+#
+#[Install]
+#WantedBy=multi-user.target
+#EOF
+#
+#echo "Installing mysql server"
+#sudo apt-get install mysql-server -y
+#sudo mysql <<EOF
+#CREATE DATABASE mydatabase;
+#CREATE USER 'user'@'localhost' IDENTIFIED BY 'user';
+#GRANT ALL PRIVILEGES ON mydatabase.* TO 'user'@'localhost' WITH GRANT OPTION;
+#FLUSH PRIVILEGES;
+#EOF
 
 echo "Installing HTOP"
 sudo apt-get install htop
@@ -55,9 +67,9 @@ sudo apt-get install htop
 
 #echo "Starting Application"
 #sudo java -jar webapp-0.0.1-SNAPSHOT.jar &
-
-AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
-echo $AMI_ID
+#
+#AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
+#echo $AMI_ID
 
 
 

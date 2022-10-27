@@ -17,12 +17,4 @@ public interface UserRepository extends CrudRepository<User, UUID> {
 
     User findByUsername(String email);
 
-
-
-
-
-
-
-
-
 }

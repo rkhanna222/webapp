@@ -40,13 +40,18 @@ variable "aws_profile" {
   default = env("AWS_PROFILE")
 }
 
+variable "ami_user" {
+  type    = list(string)
+  default = ["958333861027",]
+}
+
 
 
 source "amazon-ebs" "my-ami" {
   region                  = "${var.aws_region}"
   ami_name                = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description         = "AMI for CSYE 6225"
-  ami_users               = ["958333861027"]
+  ami_users               = "${var.ami_user}"
   profile                 = "${var.aws_profile}"
   access_key              = "${var.aws_access_key_id}"
   secret_key              = "${var.aws_secret_access_key}"
@@ -82,6 +87,13 @@ build {
   provisioner "file" {
     source      = "reboot.sh"
     destination = "/home/ubuntu/"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo touch /home/ubuntu/application.properties",
+      "sudo chmod 764 /home/ubuntu/application.properties",
+    ]
   }
 
   provisioner "shell" {
