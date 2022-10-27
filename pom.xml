@@ -11,7 +11,6 @@
 	<groupId>com.cloud.rest.webservices</groupId>
 	<artifactId>webapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
 	<name>webapp</name>
 	<description>Restful webapp for cloud</description>
 	<properties>
