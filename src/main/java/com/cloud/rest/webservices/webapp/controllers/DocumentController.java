@@ -117,6 +117,7 @@ public class DocumentController {
         User user = null;
         String password = "";
         String loggedUser ="";
+        UUID userId = null;
         try {
             logged = authenticatedUser(request);
             loggedUser = logged.split(" ")[0];
@@ -129,8 +130,14 @@ public class DocumentController {
         if(!passwordEncoder.matches(password, user.getPassword()) && !((user.getUsername().equals(loggedUser)))){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
         }
-        document = documentRepository.findDocumentByDoc_id(doc_id);
-        UUID userId = document.getUser_id();
+
+        try {
+            document = documentRepository.findDocumentByDoc_id(doc_id);
+            userId = document.getUser_id();
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+        }
 
         if (!user.getId().toString().equals((userId).toString())){
             return new ResponseEntity<>("DENY",HttpStatus.FORBIDDEN);
@@ -159,6 +166,7 @@ public class DocumentController {
         String loggedUser ="";
         User user = null;
         String password = "";
+        UUID userId = null;
         try {
             logged = authenticatedUser(request);
             loggedUser = logged.split(" ")[0];
@@ -173,8 +181,15 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
         }
 
-        document = documentRepository.findDocumentByDoc_id(doc_id);
-        UUID userId = document.getUser_id();
+        try {
+
+            document = documentRepository.findDocumentByDoc_id(doc_id);
+            userId = document.getUser_id();
+        }
+
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+        }
 
         if (!user.getId().toString().equals((userId).toString())){
             return new ResponseEntity<>("DENY",HttpStatus.FORBIDDEN);
