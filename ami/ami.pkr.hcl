@@ -85,6 +85,10 @@ build {
     destination = "/home/ubuntu/"
   }
   provisioner "file" {
+    source      = "cloudwatch-config.json"
+    destination = "/home/ubuntu/"
+  }
+  provisioner "file" {
     source      = "reboot.sh"
     destination = "/home/ubuntu/"
   }
@@ -112,4 +116,5 @@ build {
   post-processor "manifest" {
     output = "manifest.json"
   }
+
 }

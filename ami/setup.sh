@@ -15,12 +15,23 @@ update-alternatives --list java
 echo "Installing Maven"
 sudo apt install maven -y
 
+echo "Installing Cloudwatch Agent"
+sudo curl -o /root/amazon-cloudwatch-agent.deb https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E /root/amazon-cloudwatch-agent.deb
+
+echo "Configuring Cloudwatch Agent"
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+    -a fetch-config \
+    -m ec2 \
+    -c file:/home/ubuntu/cloudwatch-config.json \
+    -s
+
 #echo "Installing Tomcat"
 #sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
 #sudo tar -xvf apache-tomcat-10.0.27.tar.gz -C /usr/local
 #sudo useradd -r tomcat
 #sudo chown -R tomcat:tomcat /usr/local/apache-tomcat-10.0.27
-## TOMCAT SCRIPT
+# TOMCAT SCRIPT
 #sudo tee /etc/systemd/system/tomcat.service<<EOF
 #[Unit]
 #Description=Tomcat Server
