@@ -7,7 +7,10 @@ import com.cloud.rest.webservices.webapp.repositories.DocumentRepository;
 import com.cloud.rest.webservices.webapp.repositories.UserRepository;
 import com.cloud.rest.webservices.webapp.services.DocServices;
 import com.cloud.rest.webservices.webapp.services.DocumentServices;
+import com.timgroup.statsd.StatsDClient;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,11 @@ import java.util.UUID;
 
 @RestController
 public class DocumentController {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(DocumentController.class);
+
+    @Autowired
+    private StatsDClient metricsClient;
 
     @Autowired
     private DocumentServices documentServices;
@@ -44,6 +52,7 @@ public class DocumentController {
     @PostMapping("/v1/documents")
     public ResponseEntity<?> addDocument(@RequestParam(required = false) MultipartFile file, HttpServletRequest request) throws Exception{
 
+        metricsClient.incrementCounter("endpoint./v1/.documents.http.post");
         String loggedUser = "";
         String username = "";
         String password = "";
@@ -54,21 +63,27 @@ public class DocumentController {
             password = loggedUser.split(" ")[1];
         }
         catch(Exception e){
+            LOGGER.warn("Document Bad Request");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
         }
 
         User user = userRepository.findByUsername(username);
 
-        if(!documentServices.isFilePresent(file)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{ \"error\": \"Select a file\" }");
+        if(!documentServices.isFilePresent(file)){
+            LOGGER.warn("Document Bad Request + Select a file");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{ \"error\": \"Select a file\" }");
+        }
 
 
         String localPath = request.getServletContext().getRealPath("/images/");
         Document doc = documentServices.addDocument(user.getId(), file, localPath);
+        LOGGER.info("Document Added Successfully");
         return ResponseEntity.status(HttpStatus.OK).body(doc);
     }
 
     @GetMapping("v1/documents")
     public ResponseEntity<?> getFiles(HttpServletRequest request) {
+        metricsClient.incrementCounter("endpoint./v1/.documents.http.get");
         String logged = "";
         User user = null;
         String password = "";
@@ -79,10 +94,12 @@ public class DocumentController {
             user = userRepository.findByUsername(loggedUser);
         }
         catch (Exception e){
+            LOGGER.warn("UNAUTHORIZED to access document");
             return new ResponseEntity("No Auth in GET", HttpStatus.UNAUTHORIZED);
         }
         if(!passwordEncoder.matches(password, user.getPassword())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
+            LOGGER.warn("UNAUTHORIZED to access document");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
         }
         List<Document> myList = documentServices.getAllDocument();
         ArrayList<Document> mydocumnets = new ArrayList<>();
@@ -92,6 +109,7 @@ public class DocumentController {
                 mydocumnets.add(myList.get(i));
             }
         }
+        LOGGER.info("Document data fetched successfully");
         return ResponseEntity.status(HttpStatus.OK).body(mydocumnets);
     }
 
@@ -112,6 +130,7 @@ public class DocumentController {
     @GetMapping("v1/documents/{doc_id}")
     public ResponseEntity<?> getDocumentID(@PathVariable("doc_id") UUID doc_id, HttpServletRequest request)
     {
+        metricsClient.incrementCounter("endpoint./v1/.documents/.id.http.get");
         Document document = null;
         String logged = "";
         User user = null;
@@ -128,7 +147,8 @@ public class DocumentController {
             return new ResponseEntity("No Auth in GET", HttpStatus.UNAUTHORIZED);
         }
         if(!passwordEncoder.matches(password, user.getPassword()) && !((user.getUsername().equals(loggedUser)))){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
+            LOGGER.warn("FORBIDDEN to access document");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("FORBIDDEN to access");
         }
 
         try {
@@ -136,6 +156,7 @@ public class DocumentController {
             userId = document.getUser_id();
         }
         catch(Exception e){
+            LOGGER.warn("Document not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
         }
 
@@ -153,14 +174,17 @@ public class DocumentController {
 
         }
         if (mydocumnets.isEmpty()){
+            LOGGER.warn("Document not found");
             ResponseEntity.status(HttpStatus.OK).body("No Data Found");
         }
+        LOGGER.info("Document data found");
         return ResponseEntity.status(HttpStatus.OK).body(mydocumnets);
     }
 
     @DeleteMapping(value = "v1/documents/{doc_id}")
     public ResponseEntity<?> deleteFile(@PathVariable("doc_id") UUID doc_id, HttpServletRequest request) throws Exception {
 
+        metricsClient.incrementCounter("endpoint./v1/.documents/.id.http.delete");
         Document document = null;
         String logged = "";
         String loggedUser ="";
@@ -178,7 +202,8 @@ public class DocumentController {
         }
 
         if(!passwordEncoder.matches(password, user.getPassword()) && !((user.getUsername().equals(loggedUser)))){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to access");
+            LOGGER.warn("FORBIDDEN to access document");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("FORBIDDEN to access");
         }
 
         try {
@@ -188,6 +213,7 @@ public class DocumentController {
         }
 
         catch(Exception e){
+            LOGGER.warn("Document not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
         }
 
@@ -201,8 +227,9 @@ public class DocumentController {
 
 
         boolean isRemoved = documentServices.deleteFile(doc_id);
-
+        LOGGER.warn("Document Deleted Successfully");
         return new ResponseEntity<>("Document is deleted" + " " + doc_id, HttpStatus.OK);
+
 
     }
 }
