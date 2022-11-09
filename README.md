@@ -9,6 +9,8 @@ Web application built with Spring Boot
   Build the application artifact (war, jar, zip, etc.).
   Build the AMI with application dependencies and set up the application by copying the application artifacts and the configuration files.
   Configure the application to start automatically when VM is launched.
+  
+  
 
 
 ## Launched EC2 Instance on the custom AMI
