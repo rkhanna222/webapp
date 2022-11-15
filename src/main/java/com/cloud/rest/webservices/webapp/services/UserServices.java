@@ -17,6 +17,7 @@ import org.springframework.validation.FieldError;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 @Service
 public class UserServices implements UserDetailsService{
@@ -54,6 +55,7 @@ public class UserServices implements UserDetailsService{
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAccountCreated(LocalDateTime.now());
         user.setAccountUpdated(LocalDateTime.now());
+        user.setVerified(false);
         userRepository.save(user);
         return user;
     }
@@ -75,5 +77,17 @@ public class UserServices implements UserDetailsService{
         User user = userRepository.findByUsername(username);
         if(user==null) throw new UsernameNotFoundException("User with given emailId does not exist");
         else return new CustomUserDetails(user);
+    }
+
+    public void update(String email) {
+        try {
+            User user = userRepository.findByUsername(email);
+            System.out.println("MyUser " + user);
+            user.setVerified(true);
+            userRepository.save(user);
+        }
+        catch (UsernameNotFoundException e){
+
+        }
     }
 }
