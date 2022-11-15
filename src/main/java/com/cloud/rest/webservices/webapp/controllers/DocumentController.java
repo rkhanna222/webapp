@@ -69,6 +69,10 @@ public class DocumentController {
 
         User user = userRepository.findByUsername(username);
 
+        if(user.isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
+        }
+
         if(!documentServices.isFilePresent(file)){
             LOGGER.warn("Document Bad Request + Select a file");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{ \"error\": \"Select a file\" }");
@@ -96,6 +100,9 @@ public class DocumentController {
         catch (Exception e){
             LOGGER.warn("UNAUTHORIZED to access document");
             return new ResponseEntity("No Auth in GET", HttpStatus.UNAUTHORIZED);
+        }
+        if(user.isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
         }
         if(!passwordEncoder.matches(password, user.getPassword())){
             LOGGER.warn("UNAUTHORIZED to access document");
@@ -145,6 +152,9 @@ public class DocumentController {
         }
         catch (Exception e){
             return new ResponseEntity("No Auth in GET", HttpStatus.UNAUTHORIZED);
+        }
+        if(user.isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
         }
         if(!passwordEncoder.matches(password, user.getPassword()) && !((user.getUsername().equals(loggedUser)))){
             LOGGER.warn("FORBIDDEN to access document");
@@ -199,6 +209,10 @@ public class DocumentController {
         }
         catch (Exception e){
             return new ResponseEntity("No Auth in GET", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(user.isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
         }
 
         if(!passwordEncoder.matches(password, user.getPassword()) && !((user.getUsername().equals(loggedUser)))){

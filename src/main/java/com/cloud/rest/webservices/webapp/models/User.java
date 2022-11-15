@@ -46,15 +46,18 @@ public class User {
     private LocalDateTime accountUpdated;
 
 
-
     @JsonIgnore
     @JsonProperty("password")
     private String password;
 
+    @JsonIgnore
+    @JsonProperty("verified")
+    private boolean verified;
+
     public User() {
     }
 
-    public User(UUID id, String username, String firstName, String lastName, String password, LocalDateTime accountCreated,LocalDateTime accountUpdated) {
+    public User(UUID id, String username, String firstName, String lastName, String password, LocalDateTime accountCreated,LocalDateTime accountUpdated,boolean verified) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -62,6 +65,8 @@ public class User {
         this.password = password;
         this.accountCreated =accountCreated;
         this.accountUpdated = accountUpdated;
+        this.verified = verified;
+
     }
 
     public UUID getId() {
@@ -120,6 +125,14 @@ public class User {
 
     public void setAccountUpdated(LocalDateTime accountUpdated) {
         this.accountUpdated = accountUpdated;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     @Override

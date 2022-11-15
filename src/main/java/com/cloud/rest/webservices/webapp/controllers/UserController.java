@@ -1,5 +1,11 @@
 package com.cloud.rest.webservices.webapp.controllers;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.cloud.rest.webservices.webapp.errors.RegistrationStatus;
 import com.cloud.rest.webservices.webapp.exception.UserNotFoundException;
 import com.cloud.rest.webservices.webapp.models.User;
@@ -92,6 +98,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
         }
 
+        if(user.get().isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
+        }
+
         if(!((user.get().getUsername().equals(username)) && (passwordEncoder.matches(password,user.get().getPassword())))){
             LOGGER.warn("Forbidden to access");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden to access");
@@ -135,7 +145,33 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registrationStatus);
         }else {
             LOGGER.info("User created successfully");
+            AmazonSNS snsClient = AmazonSNSClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+
+            CreateTopicResult topicResult = snsClient.createTopic("verify_user");
+            String topicArn = topicResult.getTopicArn();
+
+            final PublishRequest publishRequest = new PublishRequest(topicArn, user.getUsername());
+            LOGGER.info("Verify request made "+publishRequest.getMessage());
+            final PublishResult publishResponse = snsClient.publish(publishRequest);
+            LOGGER.info("publishResponse " + publishResponse.toString());
+            //return ResponseEntity.status(HttpStatus.CREATED).body("");
             return ResponseEntity.status(HttpStatus.CREATED).body(userServices.register(user));
+        }
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String token) throws Exception{
+        metricsClient.incrementCounter("endpoint./verify.http.get");
+
+        User user = userRepository.findByUsername(email);
+        if(email==null || token==null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"token not found\"}");
+        LOGGER.info("email " + email);
+        if(user.isVerified()==true){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Verified Already");
+        }
+        else{
+            userServices.update(email);
+            return ResponseEntity.status(HttpStatus.OK).body("Verified Successfully");
         }
     }
 
@@ -167,6 +203,10 @@ public class UserController {
         catch(Exception e){
             LOGGER.warn("UNAUTHORIZED Request");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Error");
+        }
+
+        if(u.get().isVerified() == false){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is not verified");
         }
 
         if(!((u.get().getUsername().equals(username)) && (passwordEncoder.matches(password,u.get().getPassword())))){
