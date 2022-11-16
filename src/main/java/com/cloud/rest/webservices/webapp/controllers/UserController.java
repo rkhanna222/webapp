@@ -1,6 +1,13 @@
 package com.cloud.rest.webservices.webapp.controllers;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.CreateTopicResult;
@@ -170,8 +177,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Verified Already");
         }
         else{
-            userServices.update(email);
-            return ResponseEntity.status(HttpStatus.OK).body("Verified Successfully");
+            if(isTokenValid(user.getUsername())) {
+                userServices.update(email);
+                return ResponseEntity.status(HttpStatus.OK).body("Verified Successfully");
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.OK).body("Link got expired!!");
+            }
         }
     }
 
@@ -295,6 +307,38 @@ public class UserController {
 
         return result.isValid();
 
+    }
+
+    private boolean isTokenValid(String email){
+
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new DefaultAWSCredentialsProviderChain()).build();
+        DynamoDB dynamoDB = new DynamoDB(client);
+        Table table = dynamoDB.getTable("csye6225");
+
+        long currentEpochTime= System.currentTimeMillis() / 1000L;
+
+        GetItemSpec i_spec = new GetItemSpec()
+                .withPrimaryKey("emailId",email)
+                .withProjectionExpression("ttl_timestamp")
+                .withConsistentRead(true);
+
+        Item count = table.getItem(i_spec);
+        LOGGER.info("Item in dynamo db " + count.toJSONPretty());
+        try {
+            if (Objects.nonNull(count)){
+                if(currentEpochTime < Long.parseLong(count.toString())){
+
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        catch(Exception e){
+            LOGGER.warn(e.toString());
+        }
+        return false;
     }
 
 
