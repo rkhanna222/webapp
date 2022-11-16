@@ -127,6 +127,7 @@ public class User {
         this.accountUpdated = accountUpdated;
     }
 
+    @JsonIgnore
     public boolean isVerified() {
         return verified;
     }
