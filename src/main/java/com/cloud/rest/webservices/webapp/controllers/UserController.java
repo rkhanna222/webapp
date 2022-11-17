@@ -23,6 +23,7 @@ import com.timgroup.statsd.StatsDClient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import net.minidev.json.JSONObject;
 import org.passay.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,19 +173,22 @@ public class UserController {
 
         User user = userRepository.findByUsername(email);
         if(email==null || token==null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"token not found\"}");
-        LOGGER.info("email " + email);
-        if(user.isVerified()==true){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Verified Already");
-        }
-        else{
-            if(isTokenValid(user.getUsername())) {
-                userServices.update(email);
-                return ResponseEntity.status(HttpStatus.OK).body("Verified Successfully");
+        //LOGGER.info("email " + email);
+
+        if(isTokenValid(user.getUsername())) {
+            if (user.isVerified() == true) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Verified Already");
+            } else {
+                LOGGER.info("isTokenValid " + isTokenValid(user.getUsername()));
+                if (isTokenValid(user.getUsername())) {
+                    userServices.update(email);
+                    return ResponseEntity.status(HttpStatus.OK).body("Verified Successfully");
+                } else {
+                    return ResponseEntity.status(HttpStatus.OK).body("Link got expired!!");
+                }
             }
-            else{
-                return ResponseEntity.status(HttpStatus.OK).body("Link got expired!!");
-            }
         }
+        return ResponseEntity.status(HttpStatus.OK).body("Link got expired!!");
     }
 
     @PutMapping("/v1/account/{id}")
@@ -323,11 +327,18 @@ public class UserController {
                 .withConsistentRead(true);
 
         Item count = table.getItem(i_spec);
-        LOGGER.info("Item in dynamo db " + count.toJSONPretty());
+
+
+
+        LOGGER.info("value " + count.getString("ttl_timestamp"));
+        LOGGER.info("currentTime " + String.valueOf(currentEpochTime));
+
         try {
             if (Objects.nonNull(count)){
-                if(currentEpochTime < Long.parseLong(count.toString())){
-
+                String expirationTime =  count.getString("ttl_timestamp");
+                if(currentEpochTime < Long.parseLong(expirationTime)){
+                    LOGGER.info("value updated" + count.getString("ttl_timestamp"));
+                    LOGGER.info("currentTime updated " + String.valueOf(currentEpochTime));
                     return true;
                 }
                 else{
@@ -336,7 +347,7 @@ public class UserController {
             }
         }
         catch(Exception e){
-            LOGGER.warn(e.toString());
+            LOGGER.warn("Exception Happened" + e.toString());
         }
         return false;
     }
