@@ -25,6 +25,9 @@ jobs:
       - name: Build Maven
         run: mvn clean install
 
+      - name: Test
+        run: mvn test -DskipTests=false
+
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -57,9 +60,12 @@ jobs:
         run: |
           AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
           echo $AMI_ID
-          aws ec2 create-launch-template-version --launch-template-id lt-06c10c282526c3e7e --version-description WebVersion2 --source-version 1 --launch-template-data "ImageId=$AMI_ID"
-      - name: Updating autoScale Group
-        run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name WebServerGroup --launch-template LaunchTemplateId=lt-06c10c282526c3e7e,Version='$Latest'
+          LT_ID=$(aws ec2 describe-launch-templates --launch-template-name application-stack-launch-template | jq '.LaunchTemplates[].LaunchTemplateId')
+          LT_ID="${LT_ID%\"}"
+          LT_ID="${LT_ID#\"}"
+          echo $LT_ID
+          aws ec2 create-launch-template-version --launch-template-id $LT_ID --version-description WebVersion2 --source-version 1 --launch-template-data "ImageId=$AMI_ID"
+          aws autoscaling update-auto-scaling-group --auto-scaling-group-name WebServerGroup --launch-template LaunchTemplateId=$LT_ID,Version='$Latest'
 
       - name: Refreshing Instances
         run: aws autoscaling start-instance-refresh --auto-scaling-group-name WebServerGroup
