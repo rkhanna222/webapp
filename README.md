@@ -2,6 +2,7 @@
 Web application built with Spring Boot
 ####
 
+
 ## Created a CICD Pipeline
 - Building Custom Application AMI using Packer
 - GitHub Actions Workflow for Web App
