@@ -45,9 +45,21 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
 
-      - name: Copying Artifacts
+      - name: Set AWS Prod credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: us-east-1
+
+      - name: Copying ami Artifacts and Launching Template
         working-directory: ./ami
         run: |
           AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
           echo $AMI_ID
+          aws ec2 create-launch-template-version --launch-template-id lt-06c10c282526c3e7e --version-description WebVersion2 --source-version 1 --launch-template-data "ImageId=$AMI_ID"
+      - name: Updating autoScale Group
+        run: aws autoscaling update-auto-scaling-group --auto-scaling-group-name WebServerGroup --launch-template LaunchTemplateId=lt-06c10c282526c3e7e,Version='$Latest'
 
+      - name: Refreshing Instances
+        run: aws autoscaling start-instance-refresh --auto-scaling-group-name WebServerGroup
