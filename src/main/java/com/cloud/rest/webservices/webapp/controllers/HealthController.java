@@ -17,7 +17,7 @@ public class HealthController {
     @Autowired
     private StatsDClient metricsClient;
 
-    @GetMapping(path = "/health")
+    @GetMapping(path = "/healthz")
     public void HealthCheck(){
         LOGGER.info("Health is good");
         long startTime = System.currentTimeMillis();
